@@ -48,6 +48,7 @@ export const verifyToken: RequestHandler = (req, res, next) => {
 // Simple login endpoint for testing
 export const setupSimpleAuth = (app: any) => {
   app.post('/api/simple-login', async (req, res) => {
+    console.log('Login request received:', req.body);
     try {
       const { email, password } = req.body;
       
@@ -65,14 +66,20 @@ export const setupSimpleAuth = (app: any) => {
       const token = createToken(user);
       
       // Store user in database if not exists
-      await storage.upsertUser({
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        profileImageUrl: user.profileImageUrl,
-      });
+      try {
+        await storage.upsertUser({
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          profileImageUrl: user.profileImageUrl,
+        });
+      } catch (dbError) {
+        console.warn('Database storage failed, but login continues:', dbError);
+        // Continue with login even if database storage fails
+      }
       
+      console.log('Login successful for:', email);
       res.json({ 
         token, 
         user,
