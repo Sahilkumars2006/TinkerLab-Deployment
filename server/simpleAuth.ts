@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import { RequestHandler } from 'express';
-import { storage } from './storage';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -55,8 +54,8 @@ export const setupSimpleAuth = (app: any) => {
       // For demo purposes, accept any email/password
       // In production, you should validate against your database
       const user: User = {
-        id: email,
-        email,
+        id: email || 'demo-user',
+        email: email || 'demo@example.com',
         firstName: 'Demo',
         lastName: 'User',
         role: 'student',
@@ -65,20 +64,7 @@ export const setupSimpleAuth = (app: any) => {
       
       const token = createToken(user);
       
-      // Store user in database if not exists
-      try {
-        await storage.upsertUser({
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          profileImageUrl: user.profileImageUrl,
-        });
-      } catch (dbError) {
-        console.warn('Database storage failed, but login continues:', dbError);
-        // Continue with login even if database storage fails
-      }
-      
+      // Skip database storage for now to avoid errors
       console.log('Login successful for:', email);
       res.json({ 
         token, 
@@ -87,7 +73,7 @@ export const setupSimpleAuth = (app: any) => {
       });
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).json({ message: 'Login failed' });
+      res.status(500).json({ message: 'Login failed: ' + error.message });
     }
   });
   
