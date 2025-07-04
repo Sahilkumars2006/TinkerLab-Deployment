@@ -4,7 +4,7 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  base: '/Tinkerlab-deployment/', // 👈 REQUIRED FOR GITHUB PAGES
+  base: '/Tinkerlab-deployment/', // ✅ Must match GitHub repo name
   plugins: [
     react(),
     runtimeErrorOverlay(),
@@ -26,13 +26,7 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname, "client"),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: path.resolve(import.meta.dirname, "dist"), // ✅ output to dist/
     emptyOutDir: true,
-  },
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"],
-    },
   },
 });
