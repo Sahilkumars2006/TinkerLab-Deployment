@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "server/index.ts",
+      "src": "server/indexSimple.ts",
       "use": "@vercel/node",
       "config": {
         "includeFiles": ["server/**", "shared/**", "dist/**"]
@@ -12,18 +12,18 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist/client"
+        "distDir": "dist/public"
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/server/index.ts"
+      "dest": "/server/indexSimple.ts"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/client/$1"
+      "dest": "/dist/public/$1"
     }
   ],
   "env": {

@@ -3,6 +3,37 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FlaskConical, Bolt, Calendar, BarChart3, Users, Shield } from "lucide-react";
 
 export default function Landing() {
+  const handleSignIn = () => {
+    // For demo purposes, we'll use a simple login form
+    const email = prompt("Enter your email:");
+    const password = prompt("Enter your password:");
+    
+    if (email && password) {
+      fetch('/api/simple-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          // Store the token
+          localStorage.setItem('authToken', data.token);
+          // Redirect to dashboard
+          window.location.href = '/';
+        } else {
+          alert('Login failed: ' + (data.message || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Login error:', error);
+        alert('Login failed. Please try again.');
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
       <div className="container mx-auto px-4 py-16">
@@ -22,7 +53,7 @@ export default function Landing() {
           </p>
           <Button 
             size="lg" 
-            onClick={() => window.location.href = '/api/login'}
+            onClick={handleSignIn}
             className="text-lg px-8 py-3"
           >
             Sign In to Continue
