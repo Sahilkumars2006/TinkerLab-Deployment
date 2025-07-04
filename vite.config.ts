@@ -4,7 +4,7 @@ import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
 export default defineConfig({
-  base: '/Tinkerlab-deployment/', // ✅ Must match GitHub repo name
+  base: '/', // ✅ Use root path for Vercel deployment
   plugins: [
     react(),
     runtimeErrorOverlay(),
