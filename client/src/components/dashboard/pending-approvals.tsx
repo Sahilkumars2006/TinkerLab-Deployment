@@ -7,13 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Check, X, User } from "lucide-react";
+import type { Reservation } from "@shared/schema";
 
 export default function PendingApprovals() {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const { data: pendingReservations = [] } = useQuery({
-    queryKey: ["/api/reservations/pending"],
+  const { data: pendingReservations = [] } = useQuery<Reservation[]>({
+    queryKey: ["/api/reservations?status=pending"],
     enabled: user?.role !== 'student',
   });
 

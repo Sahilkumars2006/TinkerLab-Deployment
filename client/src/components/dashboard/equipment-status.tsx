@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { DashboardAnalytics } from "@shared/schema";
 
 export default function EquipmentStatus() {
-  const { data: analytics } = useQuery({
+  const { data: analytics } = useQuery<DashboardAnalytics>({
     queryKey: ["/api/analytics/dashboard"],
   });
 

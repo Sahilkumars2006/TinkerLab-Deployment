@@ -14,12 +14,14 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, User, MapPin, Plus, CheckCircle, XCircle } from "lucide-react";
 import { format } from "date-fns";
+import type { Reservation } from "@shared/schema";
 
 export default function ReservationsPage() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [selectedReservation, setSelectedReservation] = useState<any>(null);
   const [approvalDialogOpen, setApprovalDialogOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("my-reservations");
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -36,12 +38,12 @@ export default function ReservationsPage() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: reservations = [], isLoading: reservationsLoading, error, refetch } = useQuery({
+  const { data: reservations = [], isLoading: reservationsLoading, error, refetch } = useQuery<Reservation[]>({
     queryKey: ["/api/reservations"],
     enabled: isAuthenticated,
   });
 
-  const { data: pendingReservations = [] } = useQuery({
+  const { data: pendingReservations = [] } = useQuery<Reservation[]>({
     queryKey: ["/api/reservations/pending"],
     enabled: isAuthenticated && user?.role !== 'student',
   });

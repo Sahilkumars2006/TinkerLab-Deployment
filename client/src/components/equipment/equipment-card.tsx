@@ -1,3 +1,4 @@
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,6 +10,8 @@ import type { Equipment } from "@shared/schema";
 interface EquipmentCardProps {
   equipment: Equipment;
 }
+
+const DEFAULT_BADGE = "bg-gray-100 text-gray-800";
 
 export default function EquipmentCard({ equipment }: EquipmentCardProps) {
   const getStatusBadge = (status: string) => {
@@ -27,7 +30,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
     };
 
     return (
-      <Badge className={variants[status as keyof typeof variants] || "bg-gray-100 text-gray-800"}>
+      <Badge className={variants[status as keyof typeof variants] || DEFAULT_BADGE}>
         {labels[status as keyof typeof labels] || status}
       </Badge>
     );
@@ -42,7 +45,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
       machining: "bg-red-100 text-red-800",
     };
 
-    return colors[category as keyof typeof colors] || "bg-gray-100 text-gray-800";
+    return colors[category as keyof typeof colors] || DEFAULT_BADGE;
   };
 
   const isReservable = equipment.status === "available";
@@ -60,7 +63,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
-              <Settings className="w-12 h-12 text-gray-400" />
+              <Settings className="w-12 h-12 text-gray-400" aria-label="No image available" />
             </div>
           )}
         </div>
@@ -71,40 +74,35 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-gray-900 truncate">{equipment.name}</h3>
               <div className="flex items-center text-sm text-gray-600 mt-1">
-                <MapPin className="w-4 h-4 mr-1" />
+                <MapPin className="w-4 h-4 mr-1" aria-hidden="true" />
                 {equipment.location}
               </div>
             </div>
             <Badge className={`ml-2 ${getCategoryColor(equipment.category)} capitalize`}>
-              {equipment.category.replace("_", " ")}
+              {equipment.category.replace(/_/g, " ")}
             </Badge>
           </div>
 
           {/* Description */}
-          {equipment.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-              {equipment.description}
+          {/* @ts-ignore */}
+          {equipment.description ? (
+            <p
+              className="text-sm text-gray-600 mb-3 line-clamp-2"
+              title={equipment.description as string}
+            >
+              {equipment.description as string}
             </p>
-          )}
-
-          {/* Training Required */}
-          {equipment.requiresTraining && (
-            <div className="mb-3">
-              <Badge variant="outline" className="text-xs">
-                Training Required
-              </Badge>
-            </div>
-          )}
+          ) : null}
 
           {/* Status and Actions */}
           <div className="flex items-center justify-between">
             {getStatusBadge(equipment.status)}
-            
+
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" aria-label="View details">
                 <Eye className="w-4 h-4" />
               </Button>
-              
+
               {isReservable ? (
                 <Dialog>
                   <DialogTrigger asChild>
@@ -113,14 +111,16 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
-                    <ReservationForm 
+                    <ReservationForm
                       preselectedEquipment={equipment}
-                      onSuccess={() => {}}
+                      onSuccess={() => {
+                        // Optional: toast.success("Reservation successful!");
+                      }}
                     />
                   </DialogContent>
                 </Dialog>
               ) : (
-                <Button size="sm" disabled>
+                <Button size="sm" disabled aria-disabled="true">
                   Reserve
                 </Button>
               )}
@@ -134,14 +134,18 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
                 Specifications
               </p>
               <div className="text-xs text-gray-600">
-                {typeof equipment.specifications === 'object' ? (
+                {typeof equipment.specifications === "object" ? (
                   <div className="space-y-1">
-                    {Object.entries(equipment.specifications as Record<string, any>).slice(0, 2).map(([key, value]) => (
-                      <div key={key} className="flex justify-between">
-                        <span className="capitalize">{key.replace("_", " ")}:</span>
-                        <span>{String(value)}</span>
-                      </div>
-                    ))}
+                    {Object.entries(
+                      equipment.specifications as Record<string, any>
+                    )
+                      .slice(0, 2)
+                      .map(([key, value]) => (
+                        <div key={key} className="flex justify-between">
+                          <span className="capitalize">{key.replace(/_/g, " ")}:</span>
+                          <span>{String(value)}</span>
+                        </div>
+                      ))}
                   </div>
                 ) : (
                   <p>{String(equipment.specifications)}</p>

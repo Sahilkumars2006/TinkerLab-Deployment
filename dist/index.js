@@ -931,6 +931,8 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 var vite_config_default = defineConfig({
+  base: "/Tinkerlab-deployment/",
+  // ✅ Must match GitHub repo name
   plugins: [
     react(),
     runtimeErrorOverlay(),
@@ -950,13 +952,8 @@ var vite_config_default = defineConfig({
   root: path.resolve(import.meta.dirname, "client"),
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
+    // ✅ output to dist/public/
     emptyOutDir: true
-  },
-  server: {
-    fs: {
-      strict: true,
-      deny: ["**/.*"]
-    }
   }
 });
 

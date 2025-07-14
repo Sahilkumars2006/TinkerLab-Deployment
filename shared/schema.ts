@@ -291,3 +291,42 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type MaintenanceRecord = typeof maintenanceRecords.$inferSelect;
 export type InsertMaintenanceRecord = z.infer<typeof insertMaintenanceRecordSchema>;
+
+// API Response Types
+export interface DashboardStats {
+  equipment: {
+    total: number;
+    available: number;
+    inUse: number;
+    maintenance: number;
+  };
+  reservations: {
+    active: number;
+    pending: number;
+    completed: number;
+  };
+}
+
+export interface PopularEquipment {
+  id: number;
+  name: string;
+  category: string;
+  location: string;
+  status: string;
+  imageUrl?: string | null;
+  totalReservations: number;
+}
+
+export interface EquipmentUtilization {
+  equipmentId: number;
+  name: string;
+  category: string;
+  totalReservations: number;
+  totalUsageHours: number | null;
+  avgUsageDuration: number | null;
+}
+
+export interface DashboardAnalytics {
+  stats: DashboardStats;
+  popularEquipment: PopularEquipment[];
+}

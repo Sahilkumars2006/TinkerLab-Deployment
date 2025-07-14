@@ -9,6 +9,8 @@ export default function Landing() {
     const password = prompt("Enter your password:");
     
     if (email && password) {
+      console.log('Attempting login with:', { email, password: '***' });
+      
       fetch('/api/simple-login', {
         method: 'POST',
         headers: {
@@ -16,20 +18,27 @@ export default function Landing() {
         },
         body: JSON.stringify({ email, password }),
       })
-      .then(response => response.json())
+      .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        return response.json();
+      })
       .then(data => {
+        console.log('Response data:', data);
         if (data.token) {
           // Store the token
           localStorage.setItem('authToken', data.token);
+          console.log('Token stored, redirecting...');
           // Redirect to dashboard
           window.location.href = '/';
         } else {
+          console.error('Login failed - no token in response:', data);
           alert('Login failed: ' + (data.message || 'Unknown error'));
         }
       })
       .catch(error => {
         console.error('Login error:', error);
-        alert('Login failed. Please try again.');
+        alert('Login failed. Please try again. Check console for details.');
       });
     }
   };

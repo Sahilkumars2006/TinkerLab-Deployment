@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Calendar, Clock, CheckCircle } from "lucide-react";
+import type { DashboardAnalytics } from "@shared/schema";
 
 export default function StatsCards() {
-  const { data: analytics } = useQuery({
+  const { data: analytics } = useQuery<DashboardAnalytics>({
     queryKey: ["/api/analytics/dashboard"],
   });
 

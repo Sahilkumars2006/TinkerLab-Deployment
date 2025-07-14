@@ -8,6 +8,7 @@ import Header from "@/components/layout/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { TrendingUp, Calendar, Clock, Users } from "lucide-react";
+import type { DashboardAnalytics, EquipmentUtilization } from "@shared/schema";
 
 export default function AnalyticsPage() {
   const { toast } = useToast();
@@ -28,12 +29,12 @@ export default function AnalyticsPage() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  const { data: analytics, isLoading: analyticsLoading, error } = useQuery({
+  const { data: analytics, isLoading: analyticsLoading, error } = useQuery<DashboardAnalytics>({
     queryKey: ["/api/analytics/dashboard"],
     enabled: isAuthenticated,
   });
 
-  const { data: utilization = [] } = useQuery({
+  const { data: utilization = [] } = useQuery<EquipmentUtilization[]>({
     queryKey: ["/api/analytics/equipment-utilization"],
     enabled: isAuthenticated,
   });

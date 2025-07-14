@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import type { DashboardAnalytics } from "@shared/schema";
 
 export default function PopularEquipment() {
-  const { data: analytics } = useQuery({
+  const { data: analytics } = useQuery<DashboardAnalytics>({
     queryKey: ["/api/analytics/dashboard"],
   });
 

@@ -1,5 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { RequestHandler } from 'express';
+import express, { Request, Response } from "express";
+import { z } from "zod";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
@@ -46,38 +48,79 @@ export const verifyToken: RequestHandler = (req, res, next) => {
 
 // Simple login endpoint for testing
 export const setupSimpleAuth = (app: any) => {
-  app.post('/api/simple-login', async (req, res) => {
-    console.log('Login request received:', req.body);
+  app.post('/api/simple-login', async (req: Request, res: Response) => {
+    console.log('Login request received:', { body: req.body, headers: req.headers });
+    
     try {
       const { email, password } = req.body;
       
-      // For demo purposes, accept any email/password
-      // In production, you should validate against your database
-      const user: User = {
-        id: email || 'demo-user',
-        email: email || 'demo@example.com',
-        firstName: 'Demo',
-        lastName: 'User',
-        role: 'student',
-        profileImageUrl: 'https://via.placeholder.com/150'
+      console.log('Login attempt for:', email);
+      
+      // Simple validation
+      if (!email || !password) {
+        console.log('Login failed: missing email or password');
+        return res.status(400).json({ message: 'Email and password are required' });
+      }
+
+      // For demo purposes, accept any email/password combination
+      // In production, you would validate against a database
+      const token = jwt.sign(
+        { 
+          sub: email, 
+          email: email,
+          role: 'student', // Default role
+          iat: Math.floor(Date.now() / 1000),
+          exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) // 24 hours
+        },
+        process.env.JWT_SECRET || 'your-secret-key',
+        { algorithm: 'HS256' }
+      );
+
+      const response = { 
+        token,
+        user: {
+          id: email,
+          email: email,
+          role: 'student'
+        }
       };
       
-      const token = createToken(user);
-      
-      // Skip database storage for now to avoid errors
       console.log('Login successful for:', email);
-      res.json({ 
-        token, 
-        user,
-        message: 'Login successful' 
-      });
+      console.log('Sending response:', { ...response, token: '***' });
+      
+      res.json(response);
     } catch (error) {
       console.error('Login error:', error);
-      res.status(500).json({ message: 'Login failed: ' + error.message });
+      res.status(500).json({ message: 'Login failed: ' + (error as Error).message });
     }
   });
   
-  app.post('/api/simple-logout', (req, res) => {
+  app.post('/api/simple-logout', (req: Request, res: Response) => {
+    // In a real app, you might want to blacklist the token
     res.json({ message: 'Logged out successfully' });
+  });
+
+  // Add the missing /api/auth/user endpoint
+  app.get('/api/auth/user', verifyToken, (req: Request, res: Response) => {
+    try {
+      // The user information is already available from verifyToken middleware
+      const user = (req as any).user?.claims;
+      
+      if (!user) {
+        return res.status(401).json({ message: 'User not found' });
+      }
+
+      res.json({
+        id: user.sub,
+        email: user.email,
+        firstName: user.firstName || 'Demo',
+        lastName: user.lastName || 'User',
+        role: user.role || 'student',
+        profileImageUrl: user.profileImageUrl || 'https://via.placeholder.com/150'
+      });
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ message: 'Failed to fetch user information' });
+    }
   });
 }; 
