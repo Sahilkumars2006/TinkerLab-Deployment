@@ -279,7 +279,22 @@ export const insertMaintenanceRecordSchema = createInsertSchema(maintenanceRecor
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
-export type Equipment = typeof equipment.$inferSelect;
+export type Equipment = {
+  id: number;
+  name: string;
+  description: string | null; // Explicitly define as string or null
+  category: string;
+  location: string;
+  status: string;
+  imageUrl: string | null;
+  specifications: any; // Consider using a more specific type if possible
+  safetyRequirements: string | null; // Explicitly define as string or null
+  maxUsageDuration: number | null; // Explicitly define as number or null
+  requiresTraining: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 export type InsertEquipment = z.infer<typeof insertEquipmentSchema>;
 export type Reservation = typeof reservations.$inferSelect;
 export type InsertReservation = z.infer<typeof insertReservationSchema>;

@@ -83,16 +83,15 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
             </Badge>
           </div>
 
-          {/* Description */}
-          {/* @ts-ignore */}
-          {equipment.description ? (
-            <p
+          {/* Description - Fixed with proper type handling */}
+          {equipment.description && (
+            <p 
               className="text-sm text-gray-600 mb-3 line-clamp-2"
-              title={equipment.description as string}
+              title={equipment.description}
             >
-              {equipment.description as string}
+              {equipment.description}
             </p>
-          ) : null}
+          )}
 
           {/* Status and Actions */}
           <div className="flex items-center justify-between">
@@ -136,9 +135,7 @@ export default function EquipmentCard({ equipment }: EquipmentCardProps) {
               <div className="text-xs text-gray-600">
                 {typeof equipment.specifications === "object" ? (
                   <div className="space-y-1">
-                    {Object.entries(
-                      equipment.specifications as Record<string, any>
-                    )
+                    {Object.entries(equipment.specifications)
                       .slice(0, 2)
                       .map(([key, value]) => (
                         <div key={key} className="flex justify-between">
